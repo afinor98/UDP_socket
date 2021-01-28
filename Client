@@ -1,0 +1,20 @@
+#include <QCoreApplication>
+#include <QUdpSocket>
+#include <main.h>
+#include <QByteArray>
+
+uint32_t packetNumber;
+
+int main(int argc, char *argv[])
+{
+    QCoreApplication a(argc, argv);
+
+    QUdpSocket *udpSocketSend = new QUdpSocket;
+    udpSocketSend->connectToHost(QHostAddress::LocalHost, 1234);
+
+    QByteArray datagram;
+    datagram.append(packetNumber);
+    udpSocketSend->write(datagram);
+
+    return a.exec();
+}
