@@ -1,0 +1,39 @@
+#include <QCoreApplication>
+#include <QUdpSocket>
+#include <main.h>
+
+uint32_t dataSize;
+uint32_t incErrors;
+uint32_t previousData;
+
+int main(int argc, char *argv[])
+{
+    QCoreApplication a(argc, argv);
+
+    QUdpSocket *socket = new QUdpSocket;
+        bool result =  socket->bind(QHostAddress::LocalHost, 1234);
+        qDebug() << result;
+
+            for(unsigned int dataIndex = 0; dataIndex < dataSize ; ++dataIndex)
+            {
+                QByteArray buffer;
+                buffer.resize(socket->pendingDatagramSize());
+
+                QHostAddress sender;
+                quint16 senderPort;
+                socket->readDatagram(buffer.data(), buffer.size(), &sender, &senderPort);
+
+               uint32_t currentData = 0;
+               currentData = *buffer.data();
+
+               if (currentData != ++previousData)
+               {
+                   ++incErrors;
+                   previousData = currentData;
+               }
+            qDebug()<<incErrors;
+
+            }
+
+    return a.exec();
+}
